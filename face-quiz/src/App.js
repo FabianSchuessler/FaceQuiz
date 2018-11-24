@@ -104,6 +104,7 @@ class App extends Component {
   }
   
   setNextQuestion() {
+  const quizQuestions = this.genRandList(quizStaff);
     const counter = this.state.counter + 1;
     const questionId = this.state.questionId + 1;
 
