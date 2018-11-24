@@ -4,6 +4,7 @@ import quizStaff from './api/quizStaff';
 // Load JSON with employees
 import Quiz from './components/Quiz';
 import Result from './components/Result';
+import BlindDate from './components/BlindDate';
 import logo from './svg/logo.svg';
 import './App.css';
 import {ToastContainer, ToastStore} from 'react-toasts';
@@ -24,7 +25,8 @@ class App extends Component {
         2: 0,
         3: 0
       },
-      result: ''
+      result: '',
+	  isBlindDate: ''
     };
 
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
@@ -213,6 +215,10 @@ class App extends Component {
     return <Result quizResult={this.state.result} />;
   }
 
+  renderBlindDate() {
+    return <BlindDate quizResult={this.state.isBlindDate} />;
+  }
+  
   render() {
     return (
       <div className="App">
@@ -220,7 +226,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>FaceQuiz</h2>
         </div>
-        {this.state.result ? this.renderResult() : this.renderQuiz()}
+        {this.state.result ? this.state.isBlindDate ? this.renderBlindDate () : this.renderResult() : this.renderQuiz()}
 		<ToastContainer store={ToastStore}/>
       </div>
 	  

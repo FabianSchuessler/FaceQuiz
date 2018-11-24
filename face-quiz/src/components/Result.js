@@ -2,6 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransitionGroup } from 'react-transition-group';
 
+function  handleClick() {
+    console.log('this is:', this);
+    this.setState({ isBlindDate: 'Undetermined' });
+  }
+
 function Result(props) {
   return (
     <CSSTransitionGroup
@@ -16,6 +21,11 @@ function Result(props) {
       <div>
         You already guessed all employees! 
 		<strong> Good job!</strong>
+		
+		<button onClick={(e) => handleClick(e)}>
+          Click me
+        </button>
+		
       </div>
     </CSSTransitionGroup>
   );
