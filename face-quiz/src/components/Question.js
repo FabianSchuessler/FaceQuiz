@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 function Question(props) {
-  return <img src={ require(('./employee_pictures/' + props.content)) } />;
+  return <center><img src={ require(('./employee_pictures/' + props.content)) } /></center>;
 }
 
 Question.propTypes = {
