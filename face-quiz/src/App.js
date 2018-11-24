@@ -6,6 +6,7 @@ import Result from './components/Result';
 import logo from './svg/logo.svg';
 import './App.css';
 import {ToastContainer, ToastStore} from 'react-toasts';
+import firebase from './firebase.js';
 
 class App extends Component {
   constructor(props) {
@@ -69,6 +70,8 @@ class App extends Component {
   }
 
   setUserAnswer(answer) {
+	const itemsRef = firebase.database().ref('items');
+	
     this.setState((state, props) => ({
       answersCount: {
         ...state.answersCount,
@@ -77,14 +80,24 @@ class App extends Component {
       answer: answer
     }));
 	
+	var isAnswerCorrect = false;
 	var trueAnswer = quizEmployees.find(x => x.image === this.state.questionId.toString());
 	if (answer === trueAnswer.lastname + ' ' + trueAnswer.firstname) {
 		console.log("true");
+		isAnswerCorrect = true;
 		ToastStore.success('Oh wow, you knew your colleague!');
 	} else {
+		isAnswerCorrect = false;
 		console.log("false");
 		ToastStore.error('Oh no, this was actually your colleague ' + trueAnswer.firstname + ' ' + trueAnswer.lastname + ' from ' + trueAnswer.department);
 	}
+	
+    const item = {
+      image: this.state.questionId,
+      isAnswerCorrect: isAnswerCorrect
+    }
+	
+	itemsRef.push(item);	
   }
   
   setNextQuestion() {
