@@ -11,7 +11,7 @@ function Quiz(props) {
       <AnswerOption
         key={key.content}
         answerContent={key.content}
-        answerType={key.type}
+        answerType={key.content}
         answer={props.answer}
         questionId={props.questionId}
         onAnswerSelected={props.onAnswerSelected}

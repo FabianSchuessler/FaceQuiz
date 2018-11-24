@@ -1,52 +1,43 @@
 var quizQuestions = [
   {
-      question: "Klenk_Martin.jpg",
+      question: "1.jpg",
       answers: [
           {
-              type: "Microsoft",
-              content: "Halo"
+              content: "Klenk Martin"
           },
           {
-              type: "Nintendo",
-              content: "Pokemon"
+              content: "Nominacher Bastian"
           },
           {
-              type: "Sony",
-              content: "Uncharted"
+              content: "Rinke Alexander"
           }
       ]
   },
   {
-      question: "Nominacher_Bastian.jpg",
+      question: "2.jpg",
       answers: [
           {
-              type: "Microsoft",
-              content: "X-Box"
+              content: "Klenk Martin"
           },
           {
-              type: "Nintendo",
-              content: "Nintendo 64"
+              content: "Nominacher Bastian"
           },
           {
-              type: "Sony",
-              content: "Playstation 1"
+              content: "Rinke Alexander"
           }
       ]
   },
   {
-      question: "Rinke_Alexander.jpg",
+      question: "3.jpg",
       answers: [
           {
-              type: "Microsoft",
-              content: "Forza"
+              content: "Klenk Martin"
           },
           {
-              type: "Nintendo",
-              content: "Mario Kart"
+              content: "Nominacher Bastian"
           },
           {
-              type: "Sony",
-              content: "Gran Turismo"
+              content: "Rinke Alexander"
           }
       ]
   }

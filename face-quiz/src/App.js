@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import quizQuestions from './api/quizQuestions';
+import quizEmployees from './api/quizEmployees';
 import Quiz from './components/Quiz';
 import Result from './components/Result';
 import logo from './svg/logo.svg';
 import './App.css';
+import {ToastContainer, ToastStore} from 'react-toasts';
 
 class App extends Component {
   constructor(props) {
@@ -16,9 +18,9 @@ class App extends Component {
       answerOptions: [],
       answer: '',
       answersCount: {
-        Nintendo: 0,
-        Microsoft: 0,
-        Sony: 0
+        1: 0,
+        2: 0,
+        3: 0
       },
       result: ''
     };
@@ -70,12 +72,21 @@ class App extends Component {
     this.setState((state, props) => ({
       answersCount: {
         ...state.answersCount,
-        [answer]: state.answersCount[answer] + 1
+        [state.questionId]: answer
       },
       answer: answer
     }));
+	
+	var trueAnswer = quizEmployees.find(x => x.image === this.state.questionId.toString());
+	if (answer === trueAnswer.lastname + ' ' + trueAnswer.firstname) {
+		console.log("true");
+		ToastStore.success('Oh wow, you knew your colleague!');
+	} else {
+		console.log("false");
+		ToastStore.error('Oh no, this was actually your colleague ' + trueAnswer.firstname + ' ' + trueAnswer.lastname + ' from ' + trueAnswer.department);
+	}
   }
-
+  
   setNextQuestion() {
     const counter = this.state.counter + 1;
     const questionId = this.state.questionId + 1;
@@ -128,10 +139,12 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>React Quiz</h2>
+          <h2>FaceQuiz</h2>
         </div>
         {this.state.result ? this.renderResult() : this.renderQuiz()}
+		<ToastContainer store={ToastStore}/>
       </div>
+	  
     );
   }
 }
