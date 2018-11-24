@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 function Question(props) {
-  return <h2 className="question">{props.content}</h2>;
+  return <img src={ require(('./employee_pictures/' + props.content)) } />;
 }
 
 Question.propTypes = {
