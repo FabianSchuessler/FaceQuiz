@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import quizQuestions from './api/quizQuestions';
-import quizEmployees from './api/quizEmployees';
+import quizStaff from './api/quizStaff'; 
+// Load JSON with employees
 import Quiz from './components/Quiz';
 import Result from './components/Result';
 import logo from './svg/logo.svg';
@@ -30,6 +31,7 @@ class App extends Component {
   }
 
   componentWillMount() {
+    const quizQuestions = this.genRandList(quizStaff);
     const shuffledAnswerOptions = quizQuestions.map(question =>
       this.shuffleArray(question.answers)
     );
@@ -81,7 +83,8 @@ class App extends Component {
     }));
 	
 	var isAnswerCorrect = false;
-	var trueAnswer = quizEmployees.find(x => x.image === this.state.questionId.toString());
+	var trueAnswer = quizStaff.find(x => x.photo === this.state.questionId.toString() + '.jpg');
+	
 	if (answer === trueAnswer.lastname + ' ' + trueAnswer.firstname) {
 		console.log("true");
 		isAnswerCorrect = true;
@@ -128,6 +131,68 @@ class App extends Component {
     } else {
       this.setState({ result: 'Undetermined' });
     }
+  }
+
+  genRandList(input) {
+    //console.log(JSON.stringify("Test"));
+
+    var cont = {};
+    var quizQuestions = [];
+    var n = input.length; // number of employees
+	//console.log(JSON.stringify(n));
+    var q = 4; // number of options
+    
+    var j = 0;
+    cont.quizQuestions = quizQuestions;
+    // Generate options for each employee
+	while (j < n) {
+    var photo = input[j].photo;
+    var answers = [];
+    
+    var i = 0;
+    var i_rand = 0;
+    var rand_list = [];
+    while (i<q) {
+    var answer = {};
+	// Mark
+    if (i === 0) {
+	    //answer.type = "true";
+	    answer.content = input[j].lastname + ' ' + input[j].firstname;
+	    rand_list.push(answer.content);
+	    answers.push(answer);
+	    i++;
+	    continue;
+    }
+    else {
+	    //answer.type = "false";
+	    // pick random name index
+	    i_rand = Math.floor(Math.random() * (n) );
+	    
+	    var rand_name = input[i_rand].lastname + ' ' + input[i_rand].firstname;	
+	   
+	    //console.log(JSON.stringify(i_rand));
+	    if (rand_list.includes(rand_name)) {}
+	    // Add name if not on the list
+	    else {
+ 		    answer.content = rand_name;
+		    answers.push(answer);
+		    rand_list.push(rand_name);
+		    i++;
+	    	}
+	    }
+    }
+    // assign correct option to random position
+    //Math.floor(Math.random() * (max - min) ) + min;
+    
+    var question = {"question" : photo, "answers" : answers};
+    cont.quizQuestions.push(question);
+    
+
+    j++;
+    }
+    console.log(JSON.stringify(cont.quizQuestions));
+    return quizQuestions;
+    //console.log(JSON.stringify(input.length));
   }
 
   renderQuiz() {
