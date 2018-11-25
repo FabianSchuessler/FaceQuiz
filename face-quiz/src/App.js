@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import quizQuestions from './api/quizQuestions';
 import quizStaff from './api/quizStaff'; 
-// Load JSON with employees
 import Quiz from './components/Quiz';
 import Result from './components/Result';
 import BlindDate from './components/BlindDate';
-import logo from './svg/logo.svg';
 import './App.css';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import firebase from './firebase.js';
@@ -26,19 +23,40 @@ class App extends Component {
         3: 0
       },
       result: '',
-	  isBlindDate: ''
+	  site: 'quiz',
+	  quizQuestions: this.genRandList(quizStaff),
+	  answers: []
     };
 
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
   }
 
+  componentDidMount() {
+    const itemsRef = firebase.database().ref('items');
+    itemsRef.on('value', (snapshot) => {
+      console.log(snapshot.val());
+      let items = snapshot.val();
+      let newState = [];
+      for (let item in items) {
+        newState.push({
+          id: item,
+          image: items[item].image,
+          isAnswerCorrect: items[item].isAnswerCorrect
+        });
+      }
+      this.setState({
+        answers: newState
+      });
+    });
+  }
+  
   componentWillMount() {
-    const quizQuestions = this.genRandList(quizStaff);
-    const shuffledAnswerOptions = quizQuestions.map(question =>
+    const shuffledAnswerOptions = this.state.quizQuestions.map(question =>
       this.shuffleArray(question.answers)
     );
+	
     this.setState({
-      question: quizQuestions[0].question,
+      question: this.state.quizQuestions[0].question,
       answerOptions: shuffledAnswerOptions[0]
     });
   }
@@ -66,7 +84,7 @@ class App extends Component {
   handleAnswerSelected(event) {
     this.setUserAnswer(event.currentTarget.value);
 
-    if (this.state.questionId < quizQuestions.length) {
+    if (this.state.questionId < this.state.quizQuestions.length) {
       setTimeout(() => this.setNextQuestion(), 300);
     } else {
       setTimeout(() => this.setResults(this.getResults()), 300);
@@ -85,36 +103,36 @@ class App extends Component {
     }));
 	
 	var isAnswerCorrect = false;
-	var trueAnswer = quizStaff.find(x => x.photo === this.state.questionId.toString() + '.jpg');
+	var trueAnswer = quizStaff.find(x => x.photo === this.state.question.toString());
 	
-	if (answer === trueAnswer.lastname + ' ' + trueAnswer.firstname) {
+	console.log(answer);
+	if (answer === trueAnswer.firstname + ' ' + trueAnswer.lastname + ', ' + trueAnswer.jobtitle + ', ' + trueAnswer.department) {
 		console.log("true");
 		isAnswerCorrect = true;
-		ToastStore.success('Oh wow, you knew your colleague!');
+		ToastStore.success('Correct answer!', 2000);
 	} else {
 		isAnswerCorrect = false;
 		console.log("false");
-		ToastStore.error('Oh no, this was actually your colleague ' + trueAnswer.firstname + ' ' + trueAnswer.lastname + ' from ' + trueAnswer.department);
+		ToastStore.error('The correct answer would have been ' + trueAnswer.firstname + ' ' + trueAnswer.lastname + ', ' + trueAnswer.jobtitle + ', ' + trueAnswer.department, 6000);
 	}
 	
     const item = {
-      image: this.state.questionId,
+      image: parseInt(this.state.question.slice(0, -4)),
       isAnswerCorrect: isAnswerCorrect
     }
 	
 	itemsRef.push(item);	
   }
   
-  setNextQuestion() {
-  const quizQuestions = this.genRandList(quizStaff);
+    setNextQuestion() {
     const counter = this.state.counter + 1;
     const questionId = this.state.questionId + 1;
 
     this.setState({
       counter: counter,
       questionId: questionId,
-      question: quizQuestions[counter].question,
-      answerOptions: quizQuestions[counter].answers,
+      question: this.state.quizQuestions[counter].question,
+      answerOptions: this.state.quizQuestions[counter].answers,
       answer: ''
     });
   }
@@ -136,6 +154,14 @@ class App extends Component {
     }
   }
 
+  setBlindDate(blindDate) {
+    if (blindDate.length === 1) {
+      this.setState({ blindDate: blindDate[0] });
+    } else {
+      this.setState({ blindDate: 'Undetermined' });
+    }
+  }
+  
   genRandList(input) {
     //console.log(JSON.stringify("Test"));
 
@@ -160,7 +186,7 @@ class App extends Component {
 	// Mark
     if (i === 0) {
 	    //answer.type = "true";
-	    answer.content = input[j].lastname + ' ' + input[j].firstname;
+	    answer.content = input[j].firstname + ' ' + input[j].lastname + ', ' + input[j].jobtitle + ', ' + input[j].department;
 	    rand_list.push(answer.content);
 	    answers.push(answer);
 	    i++;
@@ -171,7 +197,7 @@ class App extends Component {
 	    // pick random name index
 	    i_rand = Math.floor(Math.random() * (n) );
 	    
-	    var rand_name = input[i_rand].lastname + ' ' + input[i_rand].firstname;	
+	    var rand_name = input[i_rand].firstname + ' ' + input[i_rand].lastname + ', ' + input[i_rand].jobtitle + ', ' + input[i_rand].department;	
 	   
 	    //console.log(JSON.stringify(i_rand));
 	    if (rand_list.includes(rand_name)) {}
@@ -193,8 +219,12 @@ class App extends Component {
 
     j++;
     }
-    console.log(JSON.stringify(cont.quizQuestions));
-    return quizQuestions;
+    // console.log(JSON.stringify(cont.quizQuestions));
+	
+	console.log(quizQuestions);
+	var shuffledQuizQuestions = this.shuffleArray(quizQuestions);
+	console.log(shuffledQuizQuestions);
+    return shuffledQuizQuestions;
     //console.log(JSON.stringify(input.length));
   }
 
@@ -205,28 +235,46 @@ class App extends Component {
         answerOptions={this.state.answerOptions}
         questionId={this.state.questionId}
         question={this.state.question}
-        questionTotal={quizQuestions.length}
+        questionTotal={this.state.quizQuestions.length}
         onAnswerSelected={this.handleAnswerSelected}
       />
     );
   }
 
   renderResult() {
-    return <Result quizResult={this.state.result} />;
+    return <Result 
+	         quizResult={this.state.result}
+		   />;
   }
 
   renderBlindDate() {
-    return <BlindDate quizResult={this.state.isBlindDate} />;
+    return <BlindDate
+			  quizBlindDate={this.state.site}
+			  answers={this.state.answers}
+	       />;
   }
+  
+   onClick = () => {
+     this.setState({
+       site: 'blindLunchDate'
+     });
+   }
+  
+  onClick2 = () => {
+     this.setState({
+       site: 'quiz'
+     });
+   }
+
   
   render() {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h2>FaceQuiz</h2>
+          {this.state.site === 'quiz' ? <button onClick={this.onClick}>Switch to Blind Lunch Date</button> : <button onClick={this.onClick2}>Switch to Quiz</button>}
         </div>
-        {this.state.result ? this.state.isBlindDate ? this.renderBlindDate () : this.renderResult() : this.renderQuiz()}
+        {this.state.result ? this.state.site !== 'quiz' ? this.renderBlindDate() : this.renderResult() : this.state.site !== 'quiz' ? this.renderBlindDate() : this.renderQuiz()}
 		<ToastContainer store={ToastStore}/>
       </div>
 	  

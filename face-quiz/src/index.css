@@ -34,13 +34,17 @@ body {
 
 @media (min-width: 769px) {
   .container {
-    margin: 2.5rem auto;
+    margin: 1rem auto;
   }
 }
 
 /* Result Component */
 .result {
-  padding: 1.5rem 2.5rem;
+  padding: 1.5rem 2rem;
+}
+
+.blinddate {
+  padding: 1.5rem 2rem;
 }
 
 /* Quiz Component */
@@ -52,14 +56,14 @@ body {
 
 /* QuestionCount Component */
 .questionCount {
-  padding: 1.5rem 2.5rem 0;
+  padding: 1rem 2rem 0;
   font-size: 14px;
 }
 
 /* Question Component */
 .question {
   margin: 0;
-  padding: 0.5rem 2.5rem 1.5rem 2.5rem;
+  padding: 0.5rem 2rem 1.5rem 2rem;
 }
 
 /* AnswerOption Component */

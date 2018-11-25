@@ -2,11 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-function  handleClick() {
-    console.log('this is:', this);
-    this.setState({ isBlindDate: 'Undetermined' });
-  }
-
 function Result(props) {
   return (
     <CSSTransitionGroup
@@ -22,14 +17,16 @@ function Result(props) {
         You already guessed all employees! 
 		<strong> Good job!</strong>
 		
-		<button onClick={(e) => handleClick(e)}>
-          Click me
-        </button>
-		
       </div>
+	  < button onClick = {_refreshPage} > Restart the quiz </button>
     </CSSTransitionGroup>
   );
 }
+
+function _refreshPage() {
+        console.log("Clicked");
+        window.location.reload();
+      }
 
 Result.propTypes = {
   quizResult: PropTypes.string.isRequired
